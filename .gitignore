@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Virtual environments
+venv/
+venv_old_python39/
+.venv/
+
+# Secrets & local config
+config.env
+.env
+.env.*
+
+# Vector DB & uploaded data
+vectordb/
+data/pdfs/
+
+# IDE / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Scan / temp artifacts
+k.txt

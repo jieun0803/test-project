@@ -1,0 +1,54 @@
+---
+description: OSS license and security guardrails when adding dependencies, imports, or external code.
+globs: "**/{package.json,package-lock.json,pnpm-lock.yaml,yarn.lock,requirements.txt,pyproject.toml,go.mod,go.sum,Cargo.toml,Cargo.lock,pom.xml,build.gradle,build.gradle.kts,settings.gradle,libs.versions.toml,Gemfile,Gemfile.lock,composer.json,composer.lock}"
+alwaysApply: false
+---
+
+# OSS Guardrails
+
+When editing dependency manifests or adding libraries, follow [oss-policy.md](../oss-policy.md).
+
+## Before Adding a Dependency
+
+1. Read `.cursor/oss-policy.md` allowed / review / blocked lists.
+2. Identify the package license (registry metadata, GitHub API, or SPDX tag).
+3. If license is blocked or unknown, **warn the user** and suggest permissive alternatives before proceeding.
+4. If license is review-required (LGPL, EPL, MPL), explain linking scope and deployment impact.
+5. Before running `npm install`, `pip install`, `go get`, etc., mention license and known CVE risk.
+
+## Copyleft Warning
+
+If the user requests GPL, AGPL, or LGPL in a **runtime/production** dependency:
+
+- Stop and warn: source disclosure or license conflict may be required for binary distribution.
+- Suggest MIT/Apache equivalents when available.
+- Note that SaaS-only deployment may not trigger GPL, but binary/mobile distribution usually does.
+
+## Security Guardrails
+
+Do not generate or accept without flagging:
+
+- Hardcoded secrets (`password = "..."`, API keys in source)
+- SQL injection patterns (string concat in queries)
+- Weak crypto (MD5/SHA1 for passwords, DES, RC4)
+- `eval` / `exec` on untrusted input
+- Disabled SSL/TLS verification
+
+## External Code
+
+When copying code from another project:
+
+- Preserve copyright and license headers.
+- Record the source URL and license in comments or NOTICE.
+
+## After Dependency Changes
+
+Remind the user when applicable:
+
+- [ ] Update NOTICE / OSS attribution
+- [ ] Regenerate SBOM
+- [ ] Run `scripts/oss/scan-deps.sh` or request license/security audit
+
+## Escalation
+
+Policy exceptions require OSS Manager approval. AI provides analysis; humans decide.
