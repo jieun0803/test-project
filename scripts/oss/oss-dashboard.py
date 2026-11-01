@@ -232,7 +232,8 @@ def main() -> int:
         return 3
     page = PAGE.replace("__TITLE__", html.escape(a.title)).replace(
         "__DATA__", json.dumps(data, ensure_ascii=False).replace("</", "<\\/"))
-    out.write_text(page, encoding="utf-8")
+    with open(out, "w", encoding="utf-8") as fh:  # out: checked by safe_path(); page: escaped HTML, not a path
+        fh.write(page)
     last = data["releases"][-1]
     print(f"Dashboard: {a.output} — {len(data['releases'])} release(s), latest {last['label']}: "
           f"{last['total']} components, Blocked {last['risk']['Blocked']}, Review {last['risk']['Review Required']}")

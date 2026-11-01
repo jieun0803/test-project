@@ -257,7 +257,9 @@ def main() -> int:
 
     if not a.no_licenses:
         fill_licenses(comps)
-    out.write_text(json.dumps(to_cyclonedx(d.name, comps, edges, direct), indent=2) + "\n", encoding="utf-8")
+    bom = json.dumps(to_cyclonedx(d.name, comps, edges, direct), indent=2) + "\n"
+    with open(out, "w", encoding="utf-8") as fh:  # out: checked by safe_path(); bom: JSON text, not a path
+        fh.write(bom)
 
     eco = {}
     for c in comps:
