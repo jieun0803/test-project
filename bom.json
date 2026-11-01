@@ -1,10 +1,10 @@
 {
   "bomFormat": "CycloneDX",
   "specVersion": "1.5",
-  "serialNumber": "urn:uuid:77904e6d-6e9b-426f-b578-268b24c5494d",
+  "serialNumber": "urn:uuid:42db0f7f-a6f1-485b-be74-14f68a6a5402",
   "version": 1,
   "metadata": {
-    "timestamp": "2026-11-01T01:11:40Z",
+    "timestamp": "2026-11-01T08:50:19.223017+00:00",
     "tools": [
       {
         "vendor": "CycloneDX",
@@ -124,20 +124,6 @@
     },
     {
       "type": "library",
-      "name": "PyMuPDF",
-      "purl": "pkg:pypi/pymupdf@1.26.5",
-      "version": "1.26.5",
-      "description": "requirements.txt: pymupdf>=1.23.0",
-      "licenses": [
-        {
-          "license": {
-            "id": "AGPL-3.0-only"
-          }
-        }
-      ]
-    },
-    {
-      "type": "library",
       "name": "pdfplumber",
       "purl": "pkg:pypi/pdfplumber@0.11.7",
       "version": "0.11.7",
@@ -146,6 +132,20 @@
         {
           "license": {
             "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "pypdf",
+      "purl": "pkg:pypi/pypdf@4.3.1",
+      "version": "4.3.1",
+      "description": "requirements.txt: pypdf>=4.0.0",
+      "licenses": [
+        {
+          "license": {
+            "name": "License :: OSI Approved :: BSD License"
           }
         }
       ]
