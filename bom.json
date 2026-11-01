@@ -1,15 +1,15 @@
 {
   "bomFormat": "CycloneDX",
   "specVersion": "1.5",
-  "serialNumber": "urn:uuid:test-project-sbom-22",
+  "serialNumber": "urn:uuid:77904e6d-6e9b-426f-b578-268b24c5494d",
   "version": 1,
   "metadata": {
-    "timestamp": "2026-08-06T07:19:56Z",
+    "timestamp": "2026-11-01T01:11:40Z",
     "tools": [
       {
-        "vendor": "Cursor Agent",
-        "name": "cyclonedx-bom + pip metadata enrichment",
-        "version": "1.0"
+        "vendor": "CycloneDX",
+        "name": "cyclonedx-py environment (venv) + requirements.txt direct filter",
+        "version": "7.3.1"
       }
     ],
     "component": {
@@ -23,12 +23,12 @@
       "type": "library",
       "name": "streamlit",
       "purl": "pkg:pypi/streamlit@1.50.0",
-      "description": "requirements.txt: streamlit>=1.28.0",
       "version": "1.50.0",
+      "description": "requirements.txt: streamlit>=1.28.0",
       "licenses": [
         {
           "license": {
-            "id": "Apache-2.0"
+            "name": "License :: OSI Approved :: Apache Software License"
           }
         }
       ]
@@ -37,8 +37,8 @@
       "type": "library",
       "name": "langchain",
       "purl": "pkg:pypi/langchain@0.3.27",
-      "description": "requirements.txt: langchain>=0.1.0",
       "version": "0.3.27",
+      "description": "requirements.txt: langchain>=0.1.0",
       "licenses": [
         {
           "license": {
@@ -51,8 +51,8 @@
       "type": "library",
       "name": "langchain-community",
       "purl": "pkg:pypi/langchain-community@0.3.31",
-      "description": "requirements.txt: langchain-community>=0.0.10",
       "version": "0.3.31",
+      "description": "requirements.txt: langchain-community>=0.0.10",
       "licenses": [
         {
           "license": {
@@ -65,8 +65,8 @@
       "type": "library",
       "name": "langchain-openai",
       "purl": "pkg:pypi/langchain-openai@0.3.35",
-      "description": "requirements.txt: langchain-openai>=0.0.5",
       "version": "0.3.35",
+      "description": "requirements.txt: langchain-openai>=0.0.5",
       "licenses": [
         {
           "license": {
@@ -79,8 +79,8 @@
       "type": "library",
       "name": "langchain-upstage",
       "purl": "pkg:pypi/langchain-upstage@0.7.4",
-      "description": "requirements.txt: langchain-upstage>=0.1.0",
       "version": "0.7.4",
+      "description": "requirements.txt: langchain-upstage>=0.1.0",
       "licenses": [
         {
           "license": {
@@ -93,12 +93,12 @@
       "type": "library",
       "name": "chromadb",
       "purl": "pkg:pypi/chromadb@1.2.1",
-      "description": "requirements.txt: chromadb>=0.4.15",
       "version": "1.2.1",
+      "description": "requirements.txt: chromadb>=0.4.15",
       "licenses": [
         {
           "license": {
-            "id": "Apache-2.0"
+            "name": "License :: OSI Approved :: Apache Software License"
           }
         }
       ]
@@ -107,12 +107,17 @@
       "type": "library",
       "name": "openai",
       "purl": "pkg:pypi/openai@2.6.1",
-      "description": "requirements.txt: openai>=1.3.0",
       "version": "2.6.1",
+      "description": "requirements.txt: openai>=1.3.0",
       "licenses": [
         {
           "license": {
             "id": "Apache-2.0"
+          }
+        },
+        {
+          "license": {
+            "name": "License :: OSI Approved :: Apache Software License"
           }
         }
       ]
@@ -121,12 +126,12 @@
       "type": "library",
       "name": "PyMuPDF",
       "purl": "pkg:pypi/pymupdf@1.26.5",
-      "description": "requirements.txt: pymupdf>=1.23.0",
       "version": "1.26.5",
+      "description": "requirements.txt: pymupdf>=1.23.0",
       "licenses": [
         {
           "license": {
-            "id": "Dual Licensed - GNU AFFERO GPL 3.0 or Artifex Commercial License"
+            "id": "AGPL-3.0-only"
           }
         }
       ]
@@ -135,8 +140,8 @@
       "type": "library",
       "name": "pdfplumber",
       "purl": "pkg:pypi/pdfplumber@0.11.7",
-      "description": "requirements.txt: pdfplumber>=0.9.0",
       "version": "0.11.7",
+      "description": "requirements.txt: pdfplumber>=0.9.0",
       "licenses": [
         {
           "license": {
@@ -149,12 +154,12 @@
       "type": "library",
       "name": "numpy",
       "purl": "pkg:pypi/numpy@2.3.4",
-      "description": "requirements.txt: numpy>=1.26.0",
       "version": "2.3.4",
+      "description": "requirements.txt: numpy>=1.26.0",
       "licenses": [
         {
           "license": {
-            "id": "BSD-3-Clause"
+            "name": "License :: OSI Approved :: BSD License"
           }
         }
       ]
@@ -163,12 +168,12 @@
       "type": "library",
       "name": "pandas",
       "purl": "pkg:pypi/pandas@2.3.3",
-      "description": "requirements.txt: pandas>=2.0.0",
       "version": "2.3.3",
+      "description": "requirements.txt: pandas>=2.0.0",
       "licenses": [
         {
           "license": {
-            "id": "BSD-3-Clause"
+            "name": "License :: OSI Approved :: BSD License"
           }
         }
       ]
@@ -177,12 +182,17 @@
       "type": "library",
       "name": "requests",
       "purl": "pkg:pypi/requests@2.32.5",
-      "description": "requirements.txt: requests>=2.31.0",
       "version": "2.32.5",
+      "description": "requirements.txt: requests>=2.31.0",
       "licenses": [
         {
           "license": {
             "id": "Apache-2.0"
+          }
+        },
+        {
+          "license": {
+            "name": "License :: OSI Approved :: Apache Software License"
           }
         }
       ]
@@ -191,12 +201,17 @@
       "type": "library",
       "name": "httpx",
       "purl": "pkg:pypi/httpx@0.28.1",
-      "description": "requirements.txt: httpx>=0.25.0",
       "version": "0.28.1",
+      "description": "requirements.txt: httpx>=0.25.0",
       "licenses": [
         {
           "license": {
             "id": "BSD-3-Clause"
+          }
+        },
+        {
+          "license": {
+            "name": "License :: OSI Approved :: BSD License"
           }
         }
       ]
@@ -205,12 +220,17 @@
       "type": "library",
       "name": "python-dotenv",
       "purl": "pkg:pypi/python-dotenv@1.1.1",
-      "description": "requirements.txt: python-dotenv>=1.0.0",
       "version": "1.1.1",
+      "description": "requirements.txt: python-dotenv>=1.0.0",
       "licenses": [
         {
           "license": {
             "id": "BSD-3-Clause"
+          }
+        },
+        {
+          "license": {
+            "name": "License :: OSI Approved :: BSD License"
           }
         }
       ]
@@ -219,8 +239,8 @@
       "type": "library",
       "name": "pydantic",
       "purl": "pkg:pypi/pydantic@2.12.3",
-      "description": "requirements.txt: pydantic>=2.0.0",
       "version": "2.12.3",
+      "description": "requirements.txt: pydantic>=2.0.0",
       "licenses": [
         {
           "license": {
@@ -233,8 +253,8 @@
       "type": "library",
       "name": "spacy",
       "purl": "pkg:pypi/spacy@3.8.7",
-      "description": "requirements.txt: spacy>=3.7.0",
       "version": "3.8.7",
+      "description": "requirements.txt: spacy>=3.7.0",
       "licenses": [
         {
           "license": {
@@ -247,12 +267,12 @@
       "type": "library",
       "name": "transformers",
       "purl": "pkg:pypi/transformers@4.46.3",
-      "description": "requirements.txt: transformers>=4.35.0",
       "version": "4.46.3",
+      "description": "requirements.txt: transformers>=4.35.0",
       "licenses": [
         {
           "license": {
-            "id": "Apache-2.0"
+            "name": "License :: OSI Approved :: Apache Software License"
           }
         }
       ]
@@ -261,8 +281,8 @@
       "type": "library",
       "name": "torch",
       "purl": "pkg:pypi/torch@2.9.0",
-      "description": "requirements.txt: torch>=2.1.0",
       "version": "2.9.0",
+      "description": "requirements.txt: torch>=2.1.0",
       "licenses": [
         {
           "license": {
@@ -275,8 +295,8 @@
       "type": "library",
       "name": "scikit-learn",
       "purl": "pkg:pypi/scikit-learn@1.7.2",
-      "description": "requirements.txt: scikit-learn>=1.3.0",
       "version": "1.7.2",
+      "description": "requirements.txt: scikit-learn>=1.3.0",
       "licenses": [
         {
           "license": {
@@ -289,12 +309,12 @@
       "type": "library",
       "name": "nltk",
       "purl": "pkg:pypi/nltk@3.9.2",
-      "description": "requirements.txt: nltk>=3.8.0",
       "version": "3.9.2",
+      "description": "requirements.txt: nltk>=3.8.0",
       "licenses": [
         {
           "license": {
-            "id": "Apache-2.0"
+            "name": "License :: OSI Approved :: Apache Software License"
           }
         }
       ]
@@ -303,13 +323,11 @@
       "type": "library",
       "name": "tqdm",
       "purl": "pkg:pypi/tqdm@4.67.1",
-      "description": "requirements.txt: tqdm>=4.66.0",
       "version": "4.67.1",
+      "description": "requirements.txt: tqdm>=4.66.0",
       "licenses": [
         {
-          "license": {
-            "id": "MIT"
-          }
+          "expression": "MPL-2.0 AND MIT"
         }
       ]
     },
@@ -317,12 +335,31 @@
       "type": "library",
       "name": "python-multipart",
       "purl": "pkg:pypi/python-multipart@0.0.20",
-      "description": "requirements.txt: python-multipart>=0.0.6",
       "version": "0.0.20",
+      "description": "requirements.txt: python-multipart>=0.0.6",
       "licenses": [
         {
           "license": {
             "id": "Apache-2.0"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "tzdata",
+      "purl": "pkg:pypi/tzdata@2025.2",
+      "version": "2025.2",
+      "description": "requirements.txt: tzdata>=2024.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        },
+        {
+          "license": {
+            "name": "License :: OSI Approved :: Apache Software License"
           }
         }
       ]
