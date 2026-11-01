@@ -20,6 +20,7 @@ import importlib.util
 import json
 import sys
 from pathlib import Path
+from oss_paths import safe_path  # CLI paths must stay inside the working directory
 
 _here = Path(__file__).resolve().parent
 _spec = importlib.util.spec_from_file_location("sbomdiff", _here / "sbom-diff.py")
@@ -221,7 +222,8 @@ def main() -> int:
     ap.add_argument("--title", default="OSS 라이선스 대시보드")
     a = ap.parse_args()
     try:
-        data = build(a.sboms)
+        out = safe_path(a.output, "--output")
+        data = build([str(safe_path(s, "SBOM")) for s in a.sboms])
     except (OSError, ValueError) as e:
         print(f"error: {e}", file=sys.stderr)
         return 3
@@ -230,7 +232,7 @@ def main() -> int:
         return 3
     page = PAGE.replace("__TITLE__", html.escape(a.title)).replace(
         "__DATA__", json.dumps(data, ensure_ascii=False).replace("</", "<\\/"))
-    Path(a.output).write_text(page, encoding="utf-8")
+    out.write_text(page, encoding="utf-8")
     last = data["releases"][-1]
     print(f"Dashboard: {a.output} — {len(data['releases'])} release(s), latest {last['label']}: "
           f"{last['total']} components, Blocked {last['risk']['Blocked']}, Review {last['risk']['Review Required']}")

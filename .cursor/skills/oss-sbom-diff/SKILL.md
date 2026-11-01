@@ -14,7 +14,7 @@ Policy source: [`.cursor/oss-policy.md`](../../oss-policy.md). License cache: [k
 ## Step 1 — Locate the two SBOMs
 
 - If the user named two files, use them (old first).
-- Otherwise look for CycloneDX JSON files (`bom*.json`, `sbom*.json`) in the project and in `sboms/`. Pick the two most recent by release version or git history (`git log --follow -- bom.json`). To get the previous version from git: `git show <prev-tag>:bom.json > /tmp/bom-old.json`.
+- Otherwise look for CycloneDX JSON files (`bom*.json`, `sbom*.json`) in the project and in `sboms/`. Pick the two most recent by release version or git history (`git log --follow -- bom.json`). To get the previous version from git: `git show <prev-tag>:bom.json > bom-old.json` (inside the project: the tools refuse paths outside the working directory).
 - If only one SBOM exists, generate the current one first (`npx --yes @cyclonedx/cyclonedx-npm --output-file bom.json` or `bash scripts/oss/sbom-python.sh . bom-python.json`). Never guess the old one.
 
 ## Step 2 — Run the diff

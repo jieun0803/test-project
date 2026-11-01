@@ -34,6 +34,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from pathlib import Path
+from oss_paths import safe_path  # CLI paths must stay inside the working directory
 
 PRIORITY = {"BLOCK": "Highest", "BLOCKED": "Highest", "CRITICAL": "Highest", "HIGH": "High",
             "REVIEW": "Medium", "REVIEW REQUIRED": "Medium", "MEDIUM": "Medium", "LOW": "Low"}
@@ -197,7 +198,7 @@ def main() -> int:
                 raise ValueError("--package needs --type and --item")
             source, items = "jira-issue.py", [finding(a.type, a.package, a.item, a.severity, a.detail, a.action)]
         else:
-            raw = sys.stdin.read() if a.src in (None, "-") else Path(a.src).read_text(encoding="utf-8")
+            raw = sys.stdin.read() if a.src in (None, "-") else safe_path(a.src, "--from").read_text(encoding="utf-8")
             source, items = normalize(json.loads(raw))
             source += ".py"
     except (ValueError, OSError) as e:

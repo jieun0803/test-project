@@ -25,6 +25,7 @@ import re
 import subprocess
 import sys
 from pathlib import Path
+from oss_paths import OutsideWorkspace, safe_path  # CLI paths must stay inside the working directory
 
 _spec = importlib.util.spec_from_file_location("audit", Path(__file__).with_name("audit-github-repo.py"))
 audit = importlib.util.module_from_spec(_spec)
@@ -118,7 +119,11 @@ def main() -> int:
     ap.add_argument("--repo", default=".")
     ap.add_argument("--json", action="store_true")
     a = ap.parse_args()
-    repo = Path(a.repo).resolve()
+    try:
+        repo = safe_path(a.repo, "--repo")
+    except OutsideWorkspace as e:
+        print(f"error: {e}", file=sys.stderr)
+        return 3
     try:
         files = added_lines(repo, a.base)
     except subprocess.CalledProcessError as e:

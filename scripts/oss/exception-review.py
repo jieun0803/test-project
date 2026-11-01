@@ -23,6 +23,7 @@ import sys
 import urllib.request
 from datetime import date
 from pathlib import Path
+from oss_paths import OutsideWorkspace, safe_path  # CLI paths must stay inside the working directory
 
 _spec = importlib.util.spec_from_file_location("audit", Path(__file__).with_name("audit-github-repo.py"))
 audit = importlib.util.module_from_spec(_spec)
@@ -126,12 +127,17 @@ def cve_items(pkgs: list[dict]) -> list[dict]:
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("project", nargs="?", default=".")
-    ap.add_argument("--register", default=str(REGISTER))
+    ap.add_argument("--register", help=f"exception register (default: {REGISTER})")
     ap.add_argument("--no-cve", action="store_true", help="skip the OSV lookup")
     ap.add_argument("--json", action="store_true")
     a = ap.parse_args()
 
-    d = Path(a.project)
+    try:
+        d = safe_path(a.project, "project")
+        register_path = safe_path(a.register, "--register") if a.register else REGISTER
+    except OutsideWorkspace as e:
+        print(f"error: {e}", file=sys.stderr)
+        return 3
     pkgs = read_manifests(d)
     if not pkgs:
         print(f"error: no package.json or requirements.txt in {d}", file=sys.stderr)
@@ -163,7 +169,7 @@ def main() -> int:
             u = unpinned.setdefault(it["pkg"], {"spec": it["spec"], "critical": 0, "high": 0})
             u["critical" if it["sev"] == "CRITICAL" else "high"] += 1
 
-    register = load_register(Path(a.register))
+    register = load_register(register_path)
     today = date.today().isoformat()
     pending, approved, expired = [], [], []
     used = set()
@@ -186,7 +192,7 @@ def main() -> int:
         rank = lambda it: (-audit.RANK[it["policy"]], it["type"], it["pkg"])
         print("# OSS Exception Review\n")
         print(f"- Project: {d.resolve()}")
-        print(f"- Register: {a.register} ({len(register)} entries)")
+        print(f"- Register: {register_path} ({len(register)} entries)")
         print(f"- Dependencies: {len(pkgs)} · CVE lookup: {'off' if a.no_cve else 'OSV API'}")
         print(f"- Pending approval {len(pending)} · Expired {len(expired)} · Approved {len(approved)} · "
               f"Stale {len(stale)} · Unpinned {len(unpinned)}\n")

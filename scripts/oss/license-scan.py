@@ -31,6 +31,7 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
+from oss_paths import OutsideWorkspace, safe_path  # CLI paths must stay inside the working directory
 
 _spec = importlib.util.spec_from_file_location("audit", Path(__file__).with_name("audit-github-repo.py"))
 audit = importlib.util.module_from_spec(_spec)
@@ -81,8 +82,10 @@ def sc_env() -> dict:
 
 
 def run_scancode(scancode: str, target: Path, out: Path) -> None:
+    if not target.is_absolute():  # safe_path() resolves it; never let a path be read as an option
+        raise RuntimeError(f"target must be an absolute path: {target}")
     cmd = [scancode, "--license", "--copyright", "--info", "--license-text", "--quiet",
-           "-n", str(max(1, (os.cpu_count() or 2) - 1)), "--json", str(out), str(target)]
+           "-n", str(max(1, (os.cpu_count() or 2) - 1)), "--json", str(out), "--", str(target)]
     try:
         r = subprocess.run(cmd, capture_output=True, text=True, env=sc_env())
     except OSError as e:
@@ -228,7 +231,12 @@ def main() -> int:
         return install()
     if not a.path:
         ap.error("PATH is required")
-    target = Path(a.path).resolve()
+    try:
+        target = safe_path(a.path, "PATH")
+        keep = safe_path(a.keep_scan, "--keep-scan") if a.keep_scan else None
+    except OutsideWorkspace as e:
+        print(f"error: {e}", file=sys.stderr)
+        return 3
     if not target.exists():
         print(f"error: {a.path} not found", file=sys.stderr)
         return 3
@@ -237,7 +245,7 @@ def main() -> int:
         print("error: ScanCode not found. Run: python3 scripts/oss/license-scan.py --install", file=sys.stderr)
         return 3
     with tempfile.TemporaryDirectory() as tmp:
-        raw = Path(a.keep_scan) if a.keep_scan else Path(tmp) / "scan.json"
+        raw = keep or Path(tmp) / "scan.json"
         try:
             run_scancode(scancode, target, raw)
         except RuntimeError as e:

@@ -19,6 +19,7 @@ import json
 import re
 import sys
 from pathlib import Path
+from oss_paths import safe_path  # CLI paths must stay inside the working directory
 
 _spec = importlib.util.spec_from_file_location("audit", Path(__file__).with_name("audit-github-repo.py"))
 audit = importlib.util.module_from_spec(_spec)
@@ -101,7 +102,7 @@ def main() -> int:
     args = ap.parse_args()
 
     try:
-        old, new = load(args.old), load(args.new)
+        old, new = load(safe_path(args.old, "old SBOM")), load(safe_path(args.new, "new SBOM"))
     except (OSError, ValueError) as e:
         print(f"error: {e}", file=sys.stderr)
         return 3

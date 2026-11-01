@@ -17,10 +17,26 @@ OUT="${2:-$DIR/bom-python.json}"
 case "$OUT" in /*) ;; *) OUT="$PWD/$OUT" ;; esac
 
 if ! command -v cyclonedx-py >/dev/null 2>&1; then
-  echo "Installing cyclonedx-bom..."
-  python3 -m pip install --quiet --user cyclonedx-bom 2>/dev/null \
-    || python3 -m pip install --quiet --user --break-system-packages cyclonedx-bom
-  export PATH="$(python3 -m site --user-base)/bin:$PATH"
+  # Private venv + hash-locked wheels only: no setup scripts run, nothing installed into the system Python
+  SBOM_VENV="${OSS_SBOM_VENV:-$HOME/.cache/oss-governance/sbom-venv}"
+  if [ ! -x "$SBOM_VENV/bin/cyclonedx-py" ]; then
+    # requirements-sbom.txt is locked for Python 3.10+ (macOS /usr/bin/python3 is 3.9)
+    PY=""
+    for c in python3.12 python3.13 python3.11 python3.10 python3.14 python3; do
+      if command -v "$c" >/dev/null 2>&1 && "$c" -c 'import sys; sys.exit(sys.version_info < (3, 10))' 2>/dev/null; then
+        PY="$c"; break
+      fi
+    done
+    if [ -z "$PY" ]; then
+      echo "error: Python 3.10+ is required to install cyclonedx-bom (brew install python@3.12)" >&2
+      exit 2
+    fi
+    echo "Installing cyclonedx-bom into $SBOM_VENV with $PY (hash-locked)..."
+    "$PY" -m venv "$SBOM_VENV" || exit 2
+    "$SBOM_VENV/bin/python" -m pip install --quiet --only-binary :all: --require-hashes \
+      -r "$(cd "$(dirname "$0")" && pwd)/requirements-sbom.txt" || exit 2
+  fi
+  export PATH="$SBOM_VENV/bin:$PATH"
 fi
 
 if [ -f "$DIR/requirements.txt" ]; then

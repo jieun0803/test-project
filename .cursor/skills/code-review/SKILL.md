@@ -17,7 +17,7 @@ Policy: [`.cursor/oss-policy.md`](../../oss-policy.md).
 |---------|---------|
 | `/code-review` (uncommitted work) | `python3 scripts/oss/review-diff.py` |
 | `/code-review main` or "this branch / PR" | `python3 scripts/oss/review-diff.py --base main` (use the PR's base branch) |
-| Another repo | add `--repo <dir>` |
+| A subfolder / submodule | add `--repo <dir>` (must be inside the working directory) |
 
 Exit code: 0 PASS, 1 REVIEW REQUIRED, 2 BLOCK, 3 error.
 

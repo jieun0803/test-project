@@ -28,6 +28,7 @@ import urllib.parse
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
+from oss_paths import OutsideWorkspace, safe_path  # CLI paths must stay inside the working directory
 
 _spec = importlib.util.spec_from_file_location("audit", Path(__file__).with_name("audit-github-repo.py"))
 audit = importlib.util.module_from_spec(_spec)
@@ -228,7 +229,12 @@ def main() -> int:
     ap.add_argument("--no-licenses", action="store_true", help="skip registry / GitHub license lookups")
     ap.add_argument("--validate", action="store_true")
     a = ap.parse_args()
-    d = Path(a.project).resolve()
+    try:
+        d = safe_path(a.project, "project")
+        out = safe_path(a.output, "--output") if a.output else d / "bom-ios.json"
+    except OutsideWorkspace as e:
+        print(f"error: {e}", file=sys.stderr)
+        return 3
     if not d.is_dir():
         print(f"error: {a.project} is not a directory", file=sys.stderr)
         return 3
@@ -251,7 +257,6 @@ def main() -> int:
 
     if not a.no_licenses:
         fill_licenses(comps)
-    out = Path(a.output) if a.output else d / "bom-ios.json"
     out.write_text(json.dumps(to_cyclonedx(d.name, comps, edges, direct), indent=2) + "\n", encoding="utf-8")
 
     eco = {}
