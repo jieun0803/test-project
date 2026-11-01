@@ -1,0 +1,28 @@
+// Gradle init script: adds the CycloneDX plugin to an Android project without editing its build files.
+// Used by scripts/oss/sbom-android.sh. Inputs (Gradle properties):
+//   -PossModule=app            module to scan (default: app)
+//   -PossConfig=releaseRuntimeClasspath   configuration that ships (default: releaseRuntimeClasspath)
+//   -PossOut=/abs/dir          output directory (default: <module>/build/reports)
+initscript {
+    repositories { gradlePluginPortal() }
+    dependencies { classpath "org.cyclonedx:cyclonedx-gradle-plugin:1.10.0" }
+}
+
+allprojects {
+    afterEvaluate { p ->
+        def module = rootProject.findProperty("ossModule") ?: "app"
+        if (p.path != ":" + module) return
+        if (!p.plugins.hasPlugin("org.cyclonedx.bom")) {
+            p.pluginManager.apply(org.cyclonedx.gradle.CycloneDxPlugin)
+        }
+        p.tasks.named("cyclonedxBom") { t ->
+            t.setIncludeConfigs([rootProject.findProperty("ossConfig") ?: "releaseRuntimeClasspath"])
+            t.setProjectType("application")
+            t.setSchemaVersion("1.5")
+            t.setDestination(new File(rootProject.findProperty("ossOut") ?: "${p.buildDir}/reports"))
+            t.setOutputName("bom-android")
+            t.setOutputFormat("json")
+            t.setIncludeLicenseText(false)
+        }
+    }
+}
