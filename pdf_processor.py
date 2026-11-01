@@ -1,10 +1,11 @@
 """
 PDF processing module for extracting and chunking text from financial documents
 """
-import fitz  # PyMuPDF
-import pdfplumber
+import pdfplumber  # MIT
+from pypdf import PdfReader  # BSD-3-Clause (fallback)
 from typing import List, Dict, Any
 import logging
+import re
 from pathlib import Path
 
 # Configure logging
@@ -20,44 +21,51 @@ class PDFProcessor:
     
     def extract_text_from_pdf(self, pdf_path: str) -> str:
         """
-        Extract text from PDF file using PyMuPDF
+        Extract text from PDF file using pdfplumber.
+        (PyMuPDF was removed: AGPL-3.0 is blocked by .cursor/oss-policy.md)
         """
         try:
-            doc = fitz.open(pdf_path)
-            text = ""
-            
-            for page_num in range(len(doc)):
-                page = doc.load_page(page_num)
-                page_text = page.get_text()
-                text += f"\n--- Page {page_num + 1} ---\n"
-                text += page_text
-            
-            doc.close()
+            text = self.extract_text_with_pdfplumber(pdf_path)
             logger.info(f"Successfully extracted text from {pdf_path}")
             return text
-            
+
         except Exception as e:
             logger.error(f"Error extracting text from {pdf_path}: {str(e)}")
             raise
-    
+
     def extract_text_with_pdfplumber(self, pdf_path: str) -> str:
         """
-        Alternative text extraction using pdfplumber (better for complex layouts)
+        Text extraction using pdfplumber (one page marker per page, as before)
         """
         try:
             text = ""
             with pdfplumber.open(pdf_path) as pdf:
                 for page_num, page in enumerate(pdf.pages):
-                    page_text = page.extract_text()
-                    if page_text:
-                        text += f"\n--- Page {page_num + 1} ---\n"
-                        text += page_text
-            
+                    text += f"\n--- Page {page_num + 1} ---\n"
+                    text += page.extract_text() or ""
+
             logger.info(f"Successfully extracted text using pdfplumber from {pdf_path}")
             return text
-            
+
         except Exception as e:
             logger.error(f"Error extracting text with pdfplumber from {pdf_path}: {str(e)}")
+            raise
+
+    def extract_text_with_pypdf(self, pdf_path: str) -> str:
+        """
+        Fallback text extraction using pypdf
+        """
+        try:
+            text = ""
+            for page_num, page in enumerate(PdfReader(pdf_path).pages):
+                text += f"\n--- Page {page_num + 1} ---\n"
+                text += page.extract_text() or ""
+
+            logger.info(f"Successfully extracted text using pypdf from {pdf_path}")
+            return text
+
+        except Exception as e:
+            logger.error(f"Error extracting text with pypdf from {pdf_path}: {str(e)}")
             raise
     
     def clean_text(self, text: str) -> str:
@@ -136,11 +144,11 @@ class PDFProcessor:
             # Extract text
             text = self.extract_text_from_pdf(pdf_path)
             
-            # If extraction fails or is empty, try pdfplumber
-            if not text.strip():
-                text = self.extract_text_with_pdfplumber(pdf_path)
-            
-            if not text.strip():
+            # If extraction is empty (only page markers), try pypdf
+            if not re.sub(r'--- Page \d+ ---', '', text).strip():
+                text = self.extract_text_with_pypdf(pdf_path)
+
+            if not re.sub(r'--- Page \d+ ---', '', text).strip():
                 raise ValueError("No text could be extracted from the PDF")
             
             # Chunk the text

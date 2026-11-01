@@ -2,8 +2,8 @@
 금융 문서용 PDF 청킹 모듈
 금융 용어 및 구조화된 문서에 최적화됨
 """
-import fitz  # PyMuPDF
-import pdfplumber
+import pdfplumber  # MIT
+from pypdf import PdfReader  # BSD-3-Clause (fallback)
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import PyPDFLoader
 from typing import List, Dict, Any
@@ -64,27 +64,29 @@ class FinancialDocumentChunker:
             logger.error(f"Error loading PDF with PyPDF: {str(e)}")
             raise
     
-    def extract_text_with_pymupdf(self, pdf_path: str) -> str:
+    def extract_text(self, pdf_path: str) -> str:
         """
-        PyMuPDF를 사용하여 텍스트 추출 (복잡한 레이아웃에 더 적합)
+        pdfplumber로 텍스트 추출, 비어 있으면 pypdf로 재시도
+        (PyMuPDF는 AGPL-3.0이라 .cursor/oss-policy.md에 따라 제거)
         """
         try:
-            doc = fitz.open(pdf_path)
             text = ""
-            
-            for page_num in range(len(doc)):
-                page = doc.load_page(page_num)
-                page_text = page.get_text()
-                
-                # 페이지 마커 추가
-                text += f"\n--- Page {page_num + 1} ---\n"
-                text += page_text
-            
-            doc.close()
+            with pdfplumber.open(pdf_path) as pdf:
+                for page_num, page in enumerate(pdf.pages):
+                    # 페이지 마커 추가
+                    text += f"\n--- Page {page_num + 1} ---\n"
+                    text += page.extract_text() or ""
+
+            if not re.sub(r'--- Page \d+ ---', '', text).strip():
+                text = ""
+                for page_num, page in enumerate(PdfReader(pdf_path).pages):
+                    text += f"\n--- Page {page_num + 1} ---\n"
+                    text += page.extract_text() or ""
+
             return text
-            
+
         except Exception as e:
-            logger.error(f"Error extracting text with PyMuPDF: {str(e)}")
+            logger.error(f"Error extracting text from PDF: {str(e)}")
             raise
     
     def clean_financial_text(self, text: str) -> str:
@@ -183,9 +185,9 @@ class FinancialDocumentChunker:
         """
         try:
             # 텍스트 추출
-            text = self.extract_text_with_pymupdf(pdf_path)
-            
-            if not text.strip():
+            text = self.extract_text(pdf_path)
+
+            if not re.sub(r'--- Page \d+ ---', '', text).strip():
                 raise ValueError("PDF에서 텍스트를 추출할 수 없습니다")
             
             # 청킹 방법 선택
