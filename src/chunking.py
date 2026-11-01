@@ -2,13 +2,13 @@
 금융 문서용 PDF 청킹 모듈
 금융 용어 및 구조화된 문서에 최적화됨
 """
+import fitz  # PyMuPDF
+import pdfplumber
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import PyPDFLoader
 from typing import List, Dict, Any
 import logging
 import re
-
-from src.pdf_text import PAGE_MARKER_RE, extract_pdf_text, has_text
 
 # 로깅 설정
 logging.basicConfig(level=logging.INFO)
@@ -64,16 +64,27 @@ class FinancialDocumentChunker:
             logger.error(f"Error loading PDF with PyPDF: {str(e)}")
             raise
     
-    def extract_text(self, pdf_path: str) -> str:
+    def extract_text_with_pymupdf(self, pdf_path: str) -> str:
         """
-        pdfplumber로 텍스트 추출, 비어 있으면 pypdf로 재시도
-        (PyMuPDF는 AGPL-3.0이라 .cursor/oss-policy.md에 따라 제거)
+        PyMuPDF를 사용하여 텍스트 추출 (복잡한 레이아웃에 더 적합)
         """
         try:
-            return extract_pdf_text(pdf_path)
-
-        except Exception:
-            logger.exception("Error extracting text from PDF")
+            doc = fitz.open(pdf_path)
+            text = ""
+            
+            for page_num in range(len(doc)):
+                page = doc.load_page(page_num)
+                page_text = page.get_text()
+                
+                # 페이지 마커 추가
+                text += f"\n--- Page {page_num + 1} ---\n"
+                text += page_text
+            
+            doc.close()
+            return text
+            
+        except Exception as e:
+            logger.error(f"Error extracting text with PyMuPDF: {str(e)}")
             raise
     
     def clean_financial_text(self, text: str) -> str:
@@ -81,7 +92,7 @@ class FinancialDocumentChunker:
         금융 문서에 특화된 텍스트 정리
         """
         # 페이지 마커 제거
-        text = PAGE_MARKER_RE.sub('', text)
+        text = re.sub(r'--- Page \d+ ---', '', text)
         
         # 조항 헤더 정규화 (제1조, 제2조 등)
         text = re.sub(r'제(\d+)조', r'\n제\1조 ', text)
@@ -172,9 +183,9 @@ class FinancialDocumentChunker:
         """
         try:
             # 텍스트 추출
-            text = self.extract_text(pdf_path)
-
-            if not has_text(text):
+            text = self.extract_text_with_pymupdf(pdf_path)
+            
+            if not text.strip():
                 raise ValueError("PDF에서 텍스트를 추출할 수 없습니다")
             
             # 청킹 방법 선택

@@ -92,7 +92,7 @@ Do not add without OSS Manager exception approval. **Strong Copyleft** may requi
 
 ## Escalation
 
-AI-assisted checks produce recommendations. Final approval for exceptions (Weak/Strong Copyleft use, proprietary SDK, HIGH CVE waiver) requires OSS Manager sign-off. Approved exceptions are recorded with an expiry date in [`oss-exceptions.md`](oss-exceptions.md); `scripts/oss/exception-review.py` lists what is pending, expired or stale.
+AI-assisted checks produce recommendations. Final approval for exceptions (Weak/Strong Copyleft use, proprietary SDK, HIGH CVE waiver) requires OSS Manager sign-off.
 
 ## Policy Version
 
