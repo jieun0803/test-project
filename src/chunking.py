@@ -2,13 +2,13 @@
 금융 문서용 PDF 청킹 모듈
 금융 용어 및 구조화된 문서에 최적화됨
 """
-import pdfplumber  # MIT
-from pypdf import PdfReader  # BSD-3-Clause (fallback)
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import PyPDFLoader
 from typing import List, Dict, Any
 import logging
 import re
+
+from src.pdf_text import PAGE_MARKER_RE, extract_pdf_text, has_text
 
 # 로깅 설정
 logging.basicConfig(level=logging.INFO)
@@ -70,23 +70,10 @@ class FinancialDocumentChunker:
         (PyMuPDF는 AGPL-3.0이라 .cursor/oss-policy.md에 따라 제거)
         """
         try:
-            text = ""
-            with pdfplumber.open(pdf_path) as pdf:
-                for page_num, page in enumerate(pdf.pages):
-                    # 페이지 마커 추가
-                    text += f"\n--- Page {page_num + 1} ---\n"
-                    text += page.extract_text() or ""
+            return extract_pdf_text(pdf_path)
 
-            if not re.sub(r'--- Page \d+ ---', '', text).strip():
-                text = ""
-                for page_num, page in enumerate(PdfReader(pdf_path).pages):
-                    text += f"\n--- Page {page_num + 1} ---\n"
-                    text += page.extract_text() or ""
-
-            return text
-
-        except Exception as e:
-            logger.error(f"Error extracting text from PDF: {str(e)}")
+        except Exception:
+            logger.exception("Error extracting text from PDF")
             raise
     
     def clean_financial_text(self, text: str) -> str:
@@ -94,7 +81,7 @@ class FinancialDocumentChunker:
         금융 문서에 특화된 텍스트 정리
         """
         # 페이지 마커 제거
-        text = re.sub(r'--- Page \d+ ---', '', text)
+        text = PAGE_MARKER_RE.sub('', text)
         
         # 조항 헤더 정규화 (제1조, 제2조 등)
         text = re.sub(r'제(\d+)조', r'\n제\1조 ', text)
@@ -187,7 +174,7 @@ class FinancialDocumentChunker:
             # 텍스트 추출
             text = self.extract_text(pdf_path)
 
-            if not re.sub(r'--- Page \d+ ---', '', text).strip():
+            if not has_text(text):
                 raise ValueError("PDF에서 텍스트를 추출할 수 없습니다")
             
             # 청킹 방법 선택
