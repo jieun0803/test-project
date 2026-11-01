@@ -6,11 +6,13 @@ Single source of truth for license and security decisions. Skills and Rules in t
 
 | Field | Value |
 |-------|-------|
-| Primary deployment | Binary release (mobile/desktop) |
+| Primary deployment | SaaS (web service — server-side, no binary shipped to end users) |
 | Secondary distribution | Not applicable |
-| Source distribution | Not distributed (binary-only to end users) |
+| Source distribution | Not distributed |
 
-Binary distribution triggers copyleft obligations when Weak Copyleft or stronger licenses are linked (especially static linking). Only Permissive licenses are allowed in production/runtime dependencies without exception.
+> **Customize per project.** Set Primary deployment to the project's real service form (SaaS / Binary release / Source). If the project ships a mobile or desktop binary, change it to `Binary release` and move Weak Copyleft from *Review Required* to *Blocked*.
+
+SaaS (network-only) use does not distribute the software, so Weak Copyleft obligations are usually not triggered; Strong Copyleft remains blocked because AGPL/SSPL trigger on network use and GPL code may later ship in a binary or source release.
 
 ## License Policy
 
@@ -29,15 +31,7 @@ Use without prior approval:
 
 ### Review Required (Medium Risk)
 
-Requires context review before adding:
-
-- Proprietary SDK (vendor-approved only)
-
-**Test-only exception:** Weak Copyleft libraries used exclusively in test/CI scope (e.g. JUnit under EPL-2.0) are allowed in `test`, `testImplementation`, or `devDependencies` only — not shipped in the distributed binary.
-
-### Blocked (High Risk)
-
-Do not add without OSS Manager exception approval. **Weak Copyleft and above** require open-source disclosure when linked into distributed binaries; block for production/runtime dependencies:
+Requires context review (linking scope, modification, deployment form) before adding:
 
 **Weak Copyleft**
 
@@ -47,6 +41,16 @@ Do not add without OSS Manager exception approval. **Weak Copyleft and above** r
 - EPL-1.0 / EPL-2.0
 - MPL-2.0
 - CDDL-1.0 / CDDL-1.1
+
+**Other**
+
+- Proprietary SDK (vendor-approved only)
+
+**Test-only exception:** Weak Copyleft libraries used exclusively in test/CI scope (e.g. JUnit under EPL-2.0) are allowed in `test`, `testImplementation`, or `devDependencies` only — not shipped in the distributed binary.
+
+### Blocked (High Risk)
+
+Do not add without OSS Manager exception approval. **Strong Copyleft** may require source disclosure of the whole application (AGPL/SSPL even for SaaS); block for production/runtime dependencies:
 
 **Strong Copyleft**
 
@@ -83,7 +87,7 @@ Do not add without OSS Manager exception approval. **Weak Copyleft and above** r
 |------------|------|
 | NOTICE / OSS attribution file | Every release with dependency changes |
 | SBOM (CycloneDX) | Every release |
-| Source disclosure | Blocked by policy — do not ship Weak/Strong Copyleft in the binary without OSS Manager exception |
+| Source disclosure | Strong Copyleft blocked by policy. Weak Copyleft: disclose modifications to the library itself if distributed; re-check when deployment changes to Binary |
 | License header on copied code | Always when importing external code |
 
 ## Escalation
@@ -92,5 +96,6 @@ AI-assisted checks produce recommendations. Final approval for exceptions (Weak/
 
 ## Policy Version
 
-- Version: 1.1.0
-- Last updated: 2026-08-06
+- Version: 1.2.0
+- Last updated: 2026-11-01
+- Changes: 1.2.0 — Primary deployment SaaS (matches web target project); Weak Copyleft moved Blocked → Review Required. 1.1.0 — Binary release, Weak Copyleft+ blocked.
