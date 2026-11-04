@@ -5,12 +5,14 @@ description: >
   checklists. Use when the user mentions license check, GPL compatibility, dependency
   audit, SBOM license review, NOTICE update, or asks whether a library license is
   allowed. Also use when auditing package.json, requirements.txt, go.mod, pom.xml,
-  build.gradle, or other dependency manifests.
+  build.gradle, or other dependency manifests. 의존성 추가/설치 요청 시에도 사용:
+  when the user asks to add, install, or upgrade a dependency (pip/npm/yarn/pnpm install,
+  editing requirements.txt or package.json), check its license against the policy first.
 ---
 
 # OSS License Compliance
 
-Audit licenses against project policy in [`.cursor/oss-policy.md`](../../oss-policy.md).
+Audit licenses against project policy in [`.cursor/oss-policy.md`](../../../.cursor/oss-policy.md).
 
 ## Step 1 — Determine Scope
 
